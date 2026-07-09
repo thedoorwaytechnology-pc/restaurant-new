@@ -463,13 +463,13 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-stone-400 sm:flex">
+      {/* <div className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-stone-400 sm:flex">
         <span className="eyebrow text-[10px] text-stone-400">Scroll</span>
         <ChevronDown
           className="h-4 w-4 motion-safe:animate-bounce"
           aria-hidden="true"
         />
-      </div>
+      </div> */}
     </section>
   );
 }
