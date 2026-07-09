@@ -5,13 +5,14 @@ import { UIStateProvider } from "./UIStateProvider";
 import { restaurantInfo } from "@/data/restaurant-info";
 
 describe("FloatingOrderButton", () => {
-  it("links to the order online destination", () => {
+  it("links to WhatsApp", () => {
     render(
       <UIStateProvider>
         <FloatingOrderButton />
       </UIStateProvider>,
     );
-    const link = screen.getByRole("link", { name: /order online/i });
-    expect(link).toHaveAttribute("href", restaurantInfo.orderOnlineHref);
+    const link = screen.getByRole("link", { name: /chat with us on whatsapp/i });
+    expect(link).toHaveAttribute("href", restaurantInfo.whatsappHref);
+    expect(link).toHaveAttribute("target", "_blank");
   });
 });

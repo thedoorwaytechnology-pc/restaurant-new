@@ -24,8 +24,8 @@ export function CateringPromo() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-charcoal-950/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/40 to-charcoal-950/70" />
+        <div className="absolute inset-0 bg-charcoal-950/65" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/30 to-charcoal-950/55" />
       </div>
 
       <RevealOnScroll className="relative mx-auto max-w-3xl px-6 text-center lg:px-10">
@@ -49,7 +49,7 @@ export function CateringPromo() {
         </ul>
 
         <MagneticButton
-          href="/contact"
+          href="/catering"
           className="mt-10 inline-flex items-center rounded-full bg-gold-500 px-8 py-3.5 text-sm font-semibold tracking-wide text-charcoal-950 transition-colors hover:bg-gold-400"
         >
           Inquire About Catering

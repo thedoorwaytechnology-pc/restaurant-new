@@ -36,6 +36,6 @@ describe("OffCanvasMenu", () => {
 
     const dialog = screen.getByRole("dialog", { name: /site navigation/i });
     expect(dialog).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /reservations/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /catering/i })).toBeInTheDocument();
   });
 });

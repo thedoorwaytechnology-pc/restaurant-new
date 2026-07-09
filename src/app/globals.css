@@ -29,8 +29,6 @@
 
   --font-display: var(--font-fraunces);
   --font-body: var(--font-jakarta);
-
-  --swiper-theme-color: var(--color-gold-400);
 }
 
 @theme inline {
@@ -65,6 +63,8 @@
 
   --animate-marquee: marquee 32s linear infinite;
   --animate-pulse-glow: pulse-glow 3.2s ease-in-out infinite;
+  --animate-steam-rise: steam-rise 5.5s ease-out infinite;
+  --animate-drift: drift 9s ease-in-out infinite;
 }
 
 @layer base {
@@ -121,24 +121,6 @@
   }
 }
 
-/* Unlayered on purpose: Swiper's own CSS is unlayered too, and an
-   @layer utilities rule always loses to unlayered CSS regardless of
-   import order, so these overrides must stay outside the cascade layer. */
-.testimonial-pagination .swiper-pagination-bullet {
-  width: 6px;
-  height: 6px;
-  background: var(--color-stone-500);
-  opacity: 0.5;
-  transition: all 0.3s ease;
-}
-
-.testimonial-pagination .swiper-pagination-bullet-active {
-  width: 20px;
-  border-radius: 9999px;
-  background: var(--color-gold-400);
-  opacity: 1;
-}
-
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -155,6 +137,36 @@
   }
   50% {
     box-shadow: 0 0 0 14px rgba(201, 162, 75, 0);
+  }
+}
+
+@keyframes steam-rise {
+  0% {
+    transform: translateY(0) scaleX(1);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-70px) scaleX(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(8px, -14px);
+  }
+  50% {
+    transform: translate(-6px, -6px);
+  }
+  75% {
+    transform: translate(6px, 10px);
   }
 }
 

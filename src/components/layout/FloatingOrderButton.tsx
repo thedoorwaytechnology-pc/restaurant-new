@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { restaurantInfo } from "@/data/restaurant-info";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { useUIState } from "@/components/layout/UIStateProvider";
@@ -19,12 +19,12 @@ export function FloatingOrderButton() {
       )}
     >
       <MagneticButton
-        href={restaurantInfo.orderOnlineHref}
+        href={restaurantInfo.whatsappHref}
         className="motion-safe:animate-pulse-glow flex items-center gap-2 rounded-full bg-gold-500 px-5 py-3.5 text-sm font-semibold tracking-wide text-charcoal-950 shadow-lg shadow-black/40 transition-colors hover:bg-gold-400 sm:px-6 sm:py-4"
-        ariaLabel="Order online"
+        ariaLabel="Chat with us on WhatsApp"
       >
-        <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-        <span>Order Online</span>
+        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+        <span>Chat on WhatsApp</span>
       </MagneticButton>
     </div>
   );

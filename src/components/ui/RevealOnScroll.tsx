@@ -11,6 +11,10 @@ type RevealOnScrollProps = {
   as?: ElementType;
   variant?: "block" | "stagger";
   y?: number;
+  x?: number;
+  /** Starting scale (element settles to 1) — a slow "camera pulling back"
+   * feel for imagery, rather than a hard cut into place. */
+  scaleFrom?: number;
   delay?: number;
   stagger?: number;
   start?: string;
@@ -23,6 +27,8 @@ export function RevealOnScroll({
   as: Tag = "div",
   variant = "block",
   y = 40,
+  x = 0,
+  scaleFrom = 1,
   delay = 0,
   stagger = 0.12,
   start = "top 82%",
@@ -41,11 +47,13 @@ export function RevealOnScroll({
 
       const mm = gsap.matchMedia();
       mm.add(NO_PREFERENCE_QUERY, () => {
-        gsap.set(els, { opacity: 0, y });
+        gsap.set(els, { opacity: 0, y, x, scale: scaleFrom });
         gsap.to(els, {
           opacity: 1,
           y: 0,
-          duration: 1.1,
+          x: 0,
+          scale: 1,
+          duration: 1.2,
           ease: ease.out,
           delay,
           stagger,
@@ -59,7 +67,7 @@ export function RevealOnScroll({
 
       return () => mm.revert();
     },
-    { scope: container, dependencies: [variant, y, delay, stagger, start, scrub] },
+    { scope: container, dependencies: [variant, y, x, scaleFrom, delay, stagger, start, scrub] },
   );
 
   const Component = Tag as ElementType;

@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 const siteUrl = "https://whitetigerpizzacurry.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/about", "/menu", "/gallery", "/reservations", "/contact"];
+  const routes = ["", "/about", "/menu", "/gallery", "/catering", "/contact"];
 
   return routes.map((route) => ({
     url: `${siteUrl}${route}`,

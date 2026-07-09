@@ -12,7 +12,7 @@ export function OurStoryIntro() {
       <WheatMotif className="pointer-events-none absolute -left-10 top-1/2 h-[420px] w-[200px] -translate-y-1/2 text-gold-500/[0.05]" />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-6 lg:grid-cols-12 lg:gap-8 lg:px-10">
-        <RevealOnScroll className="lg:col-span-6 lg:col-start-1" y={30}>
+        <RevealOnScroll className="lg:col-span-6 lg:col-start-1" y={20} scaleFrom={1.08}>
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl">
             <Image
               src={ourStoryImage.src}

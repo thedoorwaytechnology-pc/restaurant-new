@@ -1,8 +1,12 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { signatureDishImages } from "@/data/images";
-import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { gsap, useGSAP } from "@/lib/gsap-config";
+import { NO_PREFERENCE_QUERY, ease } from "@/lib/animation";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 const dishes = [
@@ -34,6 +38,40 @@ const dishes = [
 ] as const;
 
 export function SignatureDishes() {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!listRef.current) return;
+      const rows = Array.from(listRef.current.children);
+      const mm = gsap.matchMedia();
+
+      mm.add(NO_PREFERENCE_QUERY, () => {
+        rows.forEach((row, i) => {
+          // alternating entrance direction, as though each dish were set
+          // down from a different side of the table
+          const fromX = i % 2 === 0 ? -48 : 48;
+          gsap.set(row, { opacity: 0, x: fromX, y: 16 });
+          gsap.to(row, {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            duration: 1,
+            ease: ease.out,
+            scrollTrigger: {
+              trigger: row,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          });
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: listRef },
+  );
+
   return (
     <section className="relative bg-charcoal-900 py-28 lg:py-36">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 lg:grid-cols-12 lg:gap-8 lg:px-10">
@@ -54,31 +92,32 @@ export function SignatureDishes() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 lg:col-span-7">
+        <div ref={listRef} className="flex flex-col gap-6 lg:col-span-7">
           {dishes.map((dish) => {
             const image = signatureDishImages[dish.key];
             return (
-              <RevealOnScroll key={dish.key} y={30}>
-                <div className="group relative flex items-center gap-6 overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-950/60 p-4 transition-colors duration-300 hover:border-gold-500/40 sm:p-6">
-                  <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl sm:h-36 sm:w-36">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes="144px"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-2xl font-light text-ivory-100 sm:text-3xl">
-                      {dish.title}
-                    </h3>
-                    <p className="mt-2 max-w-md text-sm leading-relaxed text-stone-400">
-                      {dish.description}
-                    </p>
-                  </div>
+              <div
+                key={dish.key}
+                className="group relative flex items-center gap-6 overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-950/60 p-4 transition-colors duration-300 hover:border-gold-500/40 sm:p-6"
+              >
+                <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl sm:h-36 sm:w-36">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="144px"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
                 </div>
-              </RevealOnScroll>
+                <div>
+                  <h3 className="font-display text-2xl font-light text-ivory-100 sm:text-3xl">
+                    {dish.title}
+                  </h3>
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-stone-400">
+                    {dish.description}
+                  </p>
+                </div>
+              </div>
             );
           })}
         </div>

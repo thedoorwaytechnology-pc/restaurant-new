@@ -4,27 +4,6 @@ type MotifProps = {
   className?: string;
 };
 
-export function TigerStripesMotif({ className }: MotifProps) {
-  return (
-    <svg
-      viewBox="0 0 240 260"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.1"
-      strokeLinecap="round"
-      aria-hidden="true"
-      focusable="false"
-      className={cn("pointer-events-none", className)}
-    >
-      <path d="M10 30 Q120 -5 230 30" />
-      <path d="M0 82 Q120 42 240 82" />
-      <path d="M6 134 Q120 90 234 134" />
-      <path d="M16 184 Q120 144 224 184" />
-      <path d="M32 230 Q120 192 208 230" />
-    </svg>
-  );
-}
-
 export function FlameMotif({ className }: MotifProps) {
   return (
     <svg
@@ -62,6 +41,79 @@ export function SpiceMotif({ className }: MotifProps) {
       {seeds.map(([cx, cy]) => (
         <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="2" fill="currentColor" stroke="none" />
       ))}
+    </svg>
+  );
+}
+
+export function TigerStripesMotif({ className }: MotifProps) {
+  return (
+    <svg
+      viewBox="0 0 240 260"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.1"
+      strokeLinecap="round"
+      aria-hidden="true"
+      focusable="false"
+      className={cn("pointer-events-none", className)}
+    >
+      <path d="M10 30 Q120 -5 230 30" />
+      <path d="M0 82 Q120 42 240 82" />
+      <path d="M6 134 Q120 90 234 134" />
+      <path d="M16 184 Q120 144 224 184" />
+      <path d="M32 230 Q120 192 208 230" />
+    </svg>
+  );
+}
+
+/**
+ * Single corner-bracket flourish (top-left orientation). Flip with
+ * `-scale-x-100` / `-scale-y-100` / `scale-x-[-1] scale-y-[-1]` utility
+ * classes to place it in the other three corners of a card or frame.
+ */
+export function CornerFlourishMotif({ className }: MotifProps) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      aria-hidden="true"
+      focusable="false"
+      className={cn("pointer-events-none", className)}
+    >
+      <path d="M2 20 V6 Q2 2 6 2 H20" />
+      <path d="M2 12 Q10 12 12 20" opacity="0.8" />
+      <circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/**
+ * Small centered flourish glyph, meant to sit inline between two
+ * gold hairline rules (see GoldDivider's `ornate` variant) to mark a
+ * menu-page-style section boundary.
+ */
+export function OrnateDividerMotif({ className }: MotifProps) {
+  return (
+    <svg
+      viewBox="0 0 90 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      aria-hidden="true"
+      focusable="false"
+      className={cn("pointer-events-none", className)}
+    >
+      <path d="M20 10 Q30 2 40 10" opacity="0.85" />
+      <path d="M70 10 Q60 2 50 10" opacity="0.85" />
+      <path d="M45 4 L45 16" />
+      <path d="M40 10 L50 10" />
+      <circle cx="45" cy="10" r="2.2" fill="currentColor" stroke="none" />
+      <path d="M15 10 Q10 10 8 6" opacity="0.6" />
+      <path d="M75 10 Q80 10 82 6" opacity="0.6" />
     </svg>
   );
 }

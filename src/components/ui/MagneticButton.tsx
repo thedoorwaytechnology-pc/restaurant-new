@@ -45,10 +45,24 @@ export function MagneticButton({
     y.set(0);
   }
 
+  const isExternal = href?.startsWith("http");
+
   const content = href ? (
-    <Link href={href} className={cn(className)} aria-label={ariaLabel}>
-      {children}
-    </Link>
+    isExternal ? (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(className)}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </a>
+    ) : (
+      <Link href={href} className={cn(className)} aria-label={ariaLabel}>
+        {children}
+      </Link>
+    )
   ) : (
     <button
       type={type}

@@ -11,6 +11,10 @@ export const restaurantInfo = {
   },
   phone: "(416) 555-0142",
   phoneHref: "tel:+14165550142",
+  // TODO: replace with the restaurant's real WhatsApp Business number.
+  whatsappHref:
+    "https://wa.me/14165550142?text=" +
+    encodeURIComponent("Hi White Tiger, I'd like to ask about..."),
   email: "hello@whitetigerpizzacurry.com",
   hours: [
     { days: "Monday – Thursday", time: "11:30 AM – 10:00 PM" },
@@ -26,5 +30,6 @@ export const restaurantInfo = {
     { label: "Facebook", id: "facebook", href: "https://facebook.com" },
     { label: "TikTok", id: "tiktok", href: "https://tiktok.com" },
   ],
-  orderOnlineHref: "/menu",
+  // TODO: replace with the restaurant's real POS/online-ordering link.
+  orderOnlineHref: "https://order.whitetigerpizzacurry.com",
 } as const;

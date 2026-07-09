@@ -14,7 +14,7 @@ function renderNavbar() {
 describe("Navbar", () => {
   it("renders all primary nav links", () => {
     renderNavbar();
-    for (const label of ["Home", "About", "Menu", "Gallery", "Reservations", "Contact"]) {
+    for (const label of ["Home", "About", "Menu", "Gallery", "Catering", "Contact"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
   });

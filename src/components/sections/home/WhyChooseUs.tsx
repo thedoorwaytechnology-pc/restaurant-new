@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import { ChefHat, Clock, HandHeart, Sparkles, UtensilsCrossed } from "lucide-react";
-import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { gsap, useGSAP } from "@/lib/gsap-config";
+import { NO_PREFERENCE_QUERY, ease } from "@/lib/animation";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Counter } from "@/components/ui/Counter";
 import { GoldDivider } from "@/components/ui/GoldDivider";
@@ -40,6 +44,46 @@ const stats = [
 ];
 
 export function WhyChooseUs() {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!gridRef.current) return;
+      const columns = Array.from(gridRef.current.children);
+      const mm = gsap.matchMedia();
+
+      mm.add(NO_PREFERENCE_QUERY, () => {
+        columns.forEach((col) => {
+          const line = col.querySelector<HTMLElement>("[data-reveal-line]");
+          const rest = col.querySelectorAll<HTMLElement>("[data-reveal-fade]");
+
+          gsap.set(col, { opacity: 0, y: 28 });
+          if (line) gsap.set(line, { scaleX: 0 });
+          if (rest.length) gsap.set(rest, { opacity: 0 });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: col,
+              start: "top 88%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          tl.to(col, { opacity: 1, y: 0, duration: 0.8, ease: ease.out });
+          if (line) {
+            tl.to(line, { scaleX: 1, duration: 0.6, ease: ease.out }, "-=0.5");
+          }
+          if (rest.length) {
+            tl.to(rest, { opacity: 1, duration: 0.6, ease: ease.out, stagger: 0.06 }, "-=0.35");
+          }
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: gridRef },
+  );
+
   return (
     <section className="relative bg-charcoal-950 py-28 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -50,28 +94,23 @@ export function WhyChooseUs() {
           className="mx-auto max-w-2xl"
         />
 
-        <RevealOnScroll
-          variant="stagger"
-          className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-700 sm:grid-cols-2 lg:grid-cols-5"
-        >
+        <div ref={gridRef} className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-5">
           {pillars.map((pillar) => (
-            <div
-              key={pillar.title}
-              className="group flex flex-col gap-4 bg-charcoal-900 p-8 transition-colors duration-300 hover:bg-charcoal-800"
-            >
-              <pillar.icon
-                className="h-6 w-6 text-gold-400 transition-transform duration-300 group-hover:scale-110"
-                aria-hidden="true"
+            <div key={pillar.title} className="flex flex-col gap-4">
+              <pillar.icon className="h-6 w-6 text-gold-400" aria-hidden="true" />
+              <div
+                data-reveal-line
+                className="h-px w-full origin-left bg-gradient-to-r from-gold-500/70 to-transparent"
               />
-              <h3 className="font-display text-xl font-light text-ivory-100">
+              <h3 data-reveal-fade className="font-display text-xl font-light text-ivory-100">
                 {pillar.title}
               </h3>
-              <p className="text-sm leading-relaxed text-stone-400">
+              <p data-reveal-fade className="text-sm leading-relaxed text-stone-400">
                 {pillar.description}
               </p>
             </div>
           ))}
-        </RevealOnScroll>
+        </div>
 
         <GoldDivider className="my-16" />
 

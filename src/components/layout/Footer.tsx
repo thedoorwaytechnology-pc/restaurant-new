@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { navLinks } from "@/data/nav-links";
 import { restaurantInfo } from "@/data/restaurant-info";
-import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { AmbientGlow } from "@/components/ui/AmbientGlow";
@@ -23,7 +22,7 @@ export function Footer() {
       <AmbientGlow color="copper" className="left-1/2 top-0 h-[420px] w-[600px] -translate-x-1/2 -translate-y-1/3" />
       <FlameMotif className="pointer-events-none absolute -left-16 bottom-0 h-[440px] w-[340px] text-copper-500/[0.05]" />
 
-      <RevealOnScroll className="relative mx-auto max-w-7xl px-6 pt-24 pb-10 lg:px-10">
+      <div className="relative mx-auto max-w-7xl px-6 pt-24 pb-10 lg:px-10">
         <p className="max-w-3xl font-display text-3xl font-light leading-tight text-ivory-100 sm:text-4xl lg:text-5xl text-balance">
           Bold flavors, timeless hospitality — pull up a chair and stay a
           while.
@@ -118,7 +117,7 @@ export function Footer() {
           </p>
           <p>Crafted with care in Toronto.</p>
         </div>
-      </RevealOnScroll>
+      </div>
     </footer>
   );
 }

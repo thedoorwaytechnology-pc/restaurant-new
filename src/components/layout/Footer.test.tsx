@@ -12,6 +12,6 @@ describe("Footer", () => {
   it("renders opening hours and quick links", () => {
     render(<Footer />);
     expect(screen.getByText("Opening Hours")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Reservations" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Catering" })).toBeInTheDocument();
   });
 });

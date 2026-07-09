@@ -12,6 +12,25 @@ export const heroImage: CuratedImage = {
   alt: "Dimly lit, warm interior of White Tiger Pizza & Curry with ambient candlelight",
 };
 
+export const heroDishImages = {
+  pizza: {
+    src: unsplash("1513104890138-7c749659a591"),
+    alt: "Wood-fired pizza, fresh from the oven",
+  },
+  curry: {
+    src: unsplash("1631452180519-c014fe946bc7"),
+    alt: "Butter chicken curry in a copper bowl, with rice and naan",
+  },
+  naan: {
+    src: unsplash("1565557623262-b51c2513a641"),
+    alt: "Fresh-baked naan bread",
+  },
+  table: {
+    src: unsplash("1684846100473-f08fc22f5286"),
+    alt: "Close-up of a dark walnut wood dining table",
+  },
+} satisfies Record<string, CuratedImage>;
+
 export const ourStoryImage: CuratedImage = {
   src: unsplash("1577219491135-ce391730fb2c"),
   alt: "Chef hand-crafting a dish in an open kitchen",

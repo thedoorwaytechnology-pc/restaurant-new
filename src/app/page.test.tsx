@@ -10,9 +10,9 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the reservation and order CTAs", () => {
+  it("renders the catering and order CTAs", () => {
     render(<HomePage />);
     expect(screen.getAllByRole("link", { name: /order online/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("link", { name: /reserve a table/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /inquire about catering/i }).length).toBeGreaterThan(0);
   });
 });

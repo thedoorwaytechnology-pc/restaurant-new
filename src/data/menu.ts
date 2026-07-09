@@ -1,3 +1,7 @@
+function unsplash(id: string) {
+  return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop`;
+}
+
 export type MenuItem = {
   name: string;
   description: string;
@@ -9,6 +13,7 @@ export type MenuCategory = {
   id: string;
   title: string;
   description: string;
+  image: { src: string; alt: string };
   items: MenuItem[];
 };
 
@@ -17,6 +22,7 @@ export const menuCategories: MenuCategory[] = [
     id: "signature-pizzas",
     title: "Signature Pizzas",
     description: "Original recipes born in our own kitchen — the ones that built our name.",
+    image: { src: unsplash("1571407970349-bc81e7e96d47"), alt: "Hands sharing a freshly baked signature pizza" },
     items: [
       { name: "White Tiger Special", description: "Tandoori chicken, charred onion, cilantro-mint drizzle, mozzarella.", price: "$22", tags: ["Chef's Pick"] },
       { name: "Ember & Copper", description: "Spiced lamb sausage, roasted red pepper, smoked chili oil.", price: "$24", tags: ["Spicy"] },
@@ -29,6 +35,7 @@ export const menuCategories: MenuCategory[] = [
     id: "traditional-pizzas",
     title: "Traditional Pizzas",
     description: "The classics, made the slow way — hand-stretched dough, wood-fired heat.",
+    image: { src: unsplash("1513104890138-7c749659a591"), alt: "Classic wood-fired pizza fresh from the oven" },
     items: [
       { name: "Margherita", description: "San Marzano tomato, fresh mozzarella, basil, olive oil.", price: "$18", tags: ["Vegetarian"] },
       { name: "Pepperoni", description: "Double pepperoni, mozzarella, San Marzano tomato sauce.", price: "$19" },
@@ -41,6 +48,7 @@ export const menuCategories: MenuCategory[] = [
     id: "indian-curries",
     title: "Indian Curries",
     description: "Slow-simmered, hand-ground spice — recipes passed down, not shortcuts taken.",
+    image: { src: unsplash("1631452180519-c014fe946bc7"), alt: "Butter chicken curry in a copper bowl with rice and naan" },
     items: [
       { name: "Butter Chicken", description: "Tandoori chicken in a velvet tomato-butter gravy.", price: "$21", tags: ["Chef's Pick"] },
       { name: "Lamb Rogan Josh", description: "Kashmiri chili, slow-braised lamb, aromatic whole spice.", price: "$24", tags: ["Spicy"] },
@@ -54,6 +62,7 @@ export const menuCategories: MenuCategory[] = [
     id: "tandoori",
     title: "Tandoori",
     description: "Fired in a traditional clay tandoor for smoke, char, and depth.",
+    image: { src: unsplash("1631292784640-2b24be784d5d"), alt: "Spiced tandoori chicken in a skillet with whole spices" },
     items: [
       { name: "Tandoori Chicken (Half)", description: "Yogurt-marinated, char-grilled, served with mint chutney.", price: "$19" },
       { name: "Seekh Kebab", description: "Spiced minced lamb skewers, charred over open flame.", price: "$20", tags: ["Spicy"] },
@@ -66,6 +75,7 @@ export const menuCategories: MenuCategory[] = [
     id: "appetizers",
     title: "Appetizers",
     description: "Small plates to start the table off right.",
+    image: { src: unsplash("1601050690597-df0568f70950"), alt: "Crisp samosas, a favorite starter" },
     items: [
       { name: "Vegetable Samosas", description: "Spiced potato and pea, crisp pastry, tamarind chutney.", price: "$9", tags: ["Vegetarian"] },
       { name: "Chicken 65", description: "Crisp fried chicken, curry leaf, chili.", price: "$14", tags: ["Spicy"] },
@@ -78,6 +88,7 @@ export const menuCategories: MenuCategory[] = [
     id: "momos",
     title: "Momos",
     description: "Steamed or pan-fried dumplings, served with house chili sauce.",
+    image: { src: unsplash("1563245372-f21724e3856d"), alt: "Steamed dumplings in a bamboo basket" },
     items: [
       { name: "Chicken Momos", description: "Steamed chicken dumplings, sesame chili oil.", price: "$13" },
       { name: "Vegetable Momos", description: "Cabbage, carrot, and onion, steamed.", price: "$12", tags: ["Vegetarian"] },
@@ -89,6 +100,7 @@ export const menuCategories: MenuCategory[] = [
     id: "rice-biryani",
     title: "Rice & Biryani",
     description: "Layered, slow-cooked, and finished with saffron.",
+    image: { src: unsplash("1631515243349-e0cb75fb8d3a"), alt: "Fragrant saffron biryani, plated and ready to serve" },
     items: [
       { name: "Chicken Biryani", description: "Basmati, saffron, fried onion, mint, boiled egg.", price: "$21", tags: ["Chef's Pick"] },
       { name: "Lamb Biryani", description: "Slow-braised lamb, whole spice, saffron rice.", price: "$24" },
@@ -100,6 +112,7 @@ export const menuCategories: MenuCategory[] = [
     id: "vegetarian",
     title: "Vegetarian",
     description: "Full-flavored, meat-free dishes built with the same care as everything else.",
+    image: { src: unsplash("1512621776951-a57141f2eefd"), alt: "Colorful vegetarian bowl with fresh vegetables" },
     items: [
       { name: "Baingan Bharta", description: "Fire-roasted eggplant, tomato, onion, hand-ground spice.", price: "$17", tags: ["Vegetarian"] },
       { name: "Chana Masala", description: "Chickpeas, tomato, garam masala.", price: "$16", tags: ["Vegetarian"] },
@@ -111,6 +124,7 @@ export const menuCategories: MenuCategory[] = [
     id: "kids-menu",
     title: "Kids Menu",
     description: "Smaller portions, gentler spice, built for younger guests.",
+    image: { src: unsplash("1551782450-a2132b4ba21d"), alt: "Burger and fries, a kid-friendly favorite" },
     items: [
       { name: "Kids Cheese Pizza", description: "Mozzarella, San Marzano tomato, personal size.", price: "$11", tags: ["Vegetarian"] },
       { name: "Mild Butter Chicken & Rice", description: "A gentler take on our signature curry.", price: "$12" },
@@ -122,6 +136,7 @@ export const menuCategories: MenuCategory[] = [
     id: "desserts",
     title: "Desserts",
     description: "A sweet close to the meal, made in-house.",
+    image: { src: unsplash("1551024506-0bccd828d307"), alt: "Warm dessert with caramel drizzle and vanilla ice cream" },
     items: [
       { name: "Gulab Jamun", description: "Warm milk dumplings in cardamom-rose syrup.", price: "$8", tags: ["Vegetarian"] },
       { name: "Pistachio Kulfi", description: "Traditional Indian ice cream, pistachio, cardamom.", price: "$9", tags: ["Vegetarian"] },
@@ -133,6 +148,7 @@ export const menuCategories: MenuCategory[] = [
     id: "drinks",
     title: "Drinks",
     description: "Something to sip alongside the meal.",
+    image: { src: unsplash("1544145945-f90425340c7e"), alt: "Assorted craft cocktails" },
     items: [
       { name: "Mango Lassi", description: "Yogurt, mango, cardamom.", price: "$7", tags: ["Vegetarian"] },
       { name: "Masala Chai", description: "Slow-steeped black tea, whole spice, milk.", price: "$5", tags: ["Vegetarian"] },

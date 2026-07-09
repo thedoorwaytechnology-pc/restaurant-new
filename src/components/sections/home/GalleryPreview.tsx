@@ -28,12 +28,14 @@ export function GalleryPreview() {
 
         <RevealOnScroll
           variant="stagger"
+          scaleFrom={0.94}
+          y={16}
           className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
         >
           {preview.map((image, index) => (
             <div
               key={image.id}
-              className={`group relative overflow-hidden rounded-xl ${
+              className={`group relative overflow-hidden rounded-xl transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 ${
                 index === 0 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
               }`}
             >
@@ -42,9 +44,9 @@ export function GalleryPreview() {
                 alt={image.alt}
                 fill
                 sizes="(min-width: 1024px) 16vw, 45vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-charcoal-950/0 transition-colors duration-500 group-hover:bg-charcoal-950/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gold-500/0 to-transparent opacity-0 transition-opacity duration-500 group-hover:from-gold-500/15 group-hover:opacity-100" />
             </div>
           ))}
         </RevealOnScroll>

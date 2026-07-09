@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "authentic Indian curry",
     "fine dining pizza restaurant",
     "tandoori Toronto",
-    "restaurant reservations",
+    "catering Toronto",
   ],
   openGraph: {
     title: `${restaurantInfo.name} | ${restaurantInfo.tagline}`,
