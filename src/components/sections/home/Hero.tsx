@@ -491,7 +491,7 @@ export function Hero() {
               rising steam scaled to its larger size */}
           <div
             ref={pizzaOuterRef}
-            className="absolute left-[30%] xs:left-[10%] border xs:border-red-500 l:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
+            className="absolute left-[30%] xs:left-[10%] l:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
           >
             <div ref={pizzaInnerRef} className="relative aspect-[1408/768]">
               <Image
