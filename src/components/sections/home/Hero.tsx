@@ -185,106 +185,79 @@ export function Hero() {
         // ---- Scroll-driven cinematic sequence ----
         // The table stays put, the camera moves toward the plate, then the
         // dishes separate — pizza left, curry right, naan settles centered
-        // — before the scene hands off into Signature Dishes.
-        if (window.innerWidth < 640) {
-          // Mobile: no pin — pinning a full-height section with nothing new
-          // to reveal reads as a stuck, blank scroll on a phone. Instead the
-          // section is left to scroll past naturally, and the crossfade is
-          // front-loaded (finishes early in the scroll-through) rather than
-          // mirroring the desktop's mid-timeline positions.
-          //
-          // This matters because the reveal panel is centered *within the
-          // section*, not the viewport, and the section itself is moving:
-          // once its own scroll-through carries that point in the section
-          // above the viewport, no amount of opacity is going to make it
-          // visible. Fading it in early — while the section (and the panel
-          // with it) is still mostly on-screen — is what makes it legible
-          // at all without a pin. Its fade-out isn't scripted; natural
-          // scroll carries it off-screen for us.
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "bottom top",
-                scrub: 0.6,
-              },
-            })
-            .to(sceneRef.current, { scale: 1.08, y: -6, duration: 1 }, 0)
-            .to(
+        // — before the scene hands off into Signature Dishes. Pinned on all
+        // viewports (including mobile): scroll holds the section in place
+        // while the sequence plays, then releases into Signature Dishes
+        // once it's finished — the dish movement is just scaled down a
+        // notch on narrow screens.
+        const isMobile = window.innerWidth < 640;
+
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "+=220%",
+              scrub: 0.4,
+              pin: true,
+              anticipatePin: 1,
+            },
+          })
+          .to(
+            sceneRef.current,
+            {
+              scale: isMobile ? 1.15 : 1.3,
+              y: isMobile ? -10 : -16,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            pizzaOuterRef.current,
+            {
+              x: isMobile ? -10 : -80,
+              y: isMobile ? -10 : -18,
+              rotate: isMobile ? -4 : -5,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            curryOuterRef.current,
+            {
+              x: isMobile ? 12 : 20,
+              y: isMobile ? -8 : -14,
+              rotate: isMobile ? 4 : 5,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            naanOuterRef.current,
+            {
+              y: isMobile ? -18 : -30,
+              scale: isMobile ? 1.04 : 1.06,
+              duration: 1,
+            },
+            0,
+          )
+          .to(textColumnRef.current, { opacity: 0, y: -40, duration: 0.4 }, 0)
+          .to(revealTextRef.current, { opacity: 1, y: 0, duration: 0.3 }, 0.32)
+          .to(tableRef.current, { opacity: 0, duration: 0.35 }, 0.4)
+          .to(
+            [
               pizzaOuterRef.current,
-              { x: -24, y: -6, rotate: -3, duration: 1 },
-              0,
-            )
-            .to(
               curryOuterRef.current,
-              { x: 8, y: -5, rotate: 3, duration: 1 },
-              0,
-            )
-            .to(naanOuterRef.current, { y: -12, scale: 1.03, duration: 1 }, 0)
-            .to(
-              textColumnRef.current,
-              { opacity: 0, y: -30, duration: 0.18 },
-              0,
-            )
-            .to(
+              naanOuterRef.current,
+              pizzaSteamRef.current,
+              steamRef.current,
+              naanSteamRef.current,
+              glowRef.current,
               revealTextRef.current,
-              { opacity: 1, y: 0, duration: 0.18 },
-              0.22,
-            )
-            .to(tableRef.current, { opacity: 0, duration: 0.25 }, 0.3);
-        } else {
-          // Desktop/tablet: pinned, with a long scroll distance + low scrub
-          // smoothing so a normal scroll gesture can't skip past it in one
-          // motion. The reveal panel is centered in the section, which —
-          // because the section is pinned — stays put at viewport-center
-          // for the whole sequence, so its opacity keyframes line up with
-          // when it's actually on-screen.
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "+=220%",
-                scrub: 0.4,
-                pin: true,
-                anticipatePin: 1,
-              },
-            })
-            .to(sceneRef.current, { scale: 1.3, y: -16, duration: 1 }, 0)
-            .to(
-              pizzaOuterRef.current,
-              { x: -80, y: -18, rotate: -5, duration: 1 },
-              0,
-            )
-            .to(
-              curryOuterRef.current,
-              { x: 20, y: -14, rotate: 5, duration: 1 },
-              0,
-            )
-            .to(naanOuterRef.current, { y: -30, scale: 1.06, duration: 1 }, 0)
-            .to(textColumnRef.current, { opacity: 0, y: -40, duration: 0.4 }, 0)
-            .to(
-              revealTextRef.current,
-              { opacity: 1, y: 0, duration: 0.3 },
-              0.32,
-            )
-            .to(tableRef.current, { opacity: 0, duration: 0.35 }, 0.4)
-            .to(
-              [
-                pizzaOuterRef.current,
-                curryOuterRef.current,
-                naanOuterRef.current,
-                pizzaSteamRef.current,
-                steamRef.current,
-                naanSteamRef.current,
-                glowRef.current,
-                revealTextRef.current,
-              ],
-              { opacity: 0, duration: 0.35 },
-              0.72,
-            );
-        }
+            ],
+            { opacity: 0, duration: 0.35 },
+            0.72,
+          );
 
         return () => {
           tl.kill();
@@ -408,23 +381,17 @@ export function Hero() {
       </div>
 
       {/* stands in for the intro copy once it scrolls away, during the
-          scroll-cinematic sequence (pinned on desktop, scrubbed-in-place on
-          mobile) — bridges into the menu-focused section that follows, and
-          repeats the primary CTAs so they're still reachable without
-          scrolling back up. Centered in the viewport rather than pinned
-          near the top, so there's no dead space above it. Rendered on all
-          viewports since the scroll sequence now runs on mobile too;
-          opacity starts at 0 via the gsap.set above and is driven by the
-          scroll timeline. */}
-      {/* Positioned lower on mobile than on desktop: since mobile has no
-          pin, this panel only stays on-screen for as long as the (moving)
-          section's own scroll-through keeps its position within the
-          viewport — placing it further down the section buys more scroll
-          distance before it's carried off, without overlapping the table
-          scene below it. */}
+          pinned scroll-cinematic sequence (all viewports) — bridges into
+          the menu-focused section that follows, and repeats the primary
+          CTAs so they're still reachable without scrolling back up.
+          Centered in the viewport rather than pinned near the top, so
+          there's no dead space above it. Because the section itself is
+          pinned for the whole sequence, this stays viewport-centered the
+          entire time; opacity starts at 0 via the gsap.set above and is
+          driven by the scroll timeline. */}
       <div
         ref={revealTextRef}
-        className="pointer-events-none absolute inset-x-0 top-[62%] z-10 flex -translate-y-1/2 flex-col items-center gap-6 px-6 text-center sm:top-1/2"
+        className="pointer-events-none absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-6 px-6 text-center"
       >
         <div>
           <p className="font-display text-3xl font-light leading-tight text-ivory-100 lg:text-5xl">
@@ -524,7 +491,7 @@ export function Hero() {
               rising steam scaled to its larger size */}
           <div
             ref={pizzaOuterRef}
-            className="absolute left-[30%] md:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
+            className="absolute left-[30%] xs:left-[10%] border xs:border-red-500 l:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
           >
             <div ref={pizzaInnerRef} className="relative aspect-[1408/768]">
               <Image
