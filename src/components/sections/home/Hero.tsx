@@ -182,56 +182,109 @@ export function Hero() {
           },
         );
 
-        // ---- Scroll-driven cinematic sequence (desktop/tablet only) ----
+        // ---- Scroll-driven cinematic sequence ----
         // The table stays put, the camera moves toward the plate, then the
         // dishes separate — pizza left, curry right, naan settles centered
-        // — before the scene hands off into Signature Dishes. Long pin
-        // distance + low scrub smoothing so a normal scroll gesture can't
-        // skip past it in one motion. Skipped on small viewports: pinning a
-        // full-height section with nothing new to reveal just reads as a
-        // stuck, blank scroll on a phone.
-        if (window.innerWidth < 640) return;
-
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: "+=220%",
-              scrub: 0.4,
-              pin: true,
-              anticipatePin: 1,
-            },
-          })
-          .to(sceneRef.current, { scale: 1.3, y: -16, duration: 1 }, 0)
-          .to(
-            pizzaOuterRef.current,
-            { x: -80, y: -18, rotate: -5, duration: 1 },
-            0,
-          )
-          .to(
-            curryOuterRef.current,
-            { x: 20, y: -14, rotate: 5, duration: 1 },
-            0,
-          )
-          .to(naanOuterRef.current, { y: -30, scale: 1.06, duration: 1 }, 0)
-          .to(textColumnRef.current, { opacity: 0, y: -40, duration: 0.4 }, 0)
-          .to(revealTextRef.current, { opacity: 1, y: 0, duration: 0.3 }, 0.32)
-          .to(tableRef.current, { opacity: 0, duration: 0.35 }, 0.4)
-          .to(
-            [
+        // — before the scene hands off into Signature Dishes.
+        if (window.innerWidth < 640) {
+          // Mobile: no pin — pinning a full-height section with nothing new
+          // to reveal reads as a stuck, blank scroll on a phone. Instead the
+          // section is left to scroll past naturally, and the crossfade is
+          // front-loaded (finishes early in the scroll-through) rather than
+          // mirroring the desktop's mid-timeline positions.
+          //
+          // This matters because the reveal panel is centered *within the
+          // section*, not the viewport, and the section itself is moving:
+          // once its own scroll-through carries that point in the section
+          // above the viewport, no amount of opacity is going to make it
+          // visible. Fading it in early — while the section (and the panel
+          // with it) is still mostly on-screen — is what makes it legible
+          // at all without a pin. Its fade-out isn't scripted; natural
+          // scroll carries it off-screen for us.
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 0.6,
+              },
+            })
+            .to(sceneRef.current, { scale: 1.08, y: -6, duration: 1 }, 0)
+            .to(
               pizzaOuterRef.current,
+              { x: -24, y: -6, rotate: -3, duration: 1 },
+              0,
+            )
+            .to(
               curryOuterRef.current,
-              naanOuterRef.current,
-              pizzaSteamRef.current,
-              steamRef.current,
-              naanSteamRef.current,
-              glowRef.current,
+              { x: 8, y: -5, rotate: 3, duration: 1 },
+              0,
+            )
+            .to(naanOuterRef.current, { y: -12, scale: 1.03, duration: 1 }, 0)
+            .to(
+              textColumnRef.current,
+              { opacity: 0, y: -30, duration: 0.18 },
+              0,
+            )
+            .to(
               revealTextRef.current,
-            ],
-            { opacity: 0, duration: 0.35 },
-            0.72,
-          );
+              { opacity: 1, y: 0, duration: 0.18 },
+              0.22,
+            )
+            .to(tableRef.current, { opacity: 0, duration: 0.25 }, 0.3);
+        } else {
+          // Desktop/tablet: pinned, with a long scroll distance + low scrub
+          // smoothing so a normal scroll gesture can't skip past it in one
+          // motion. The reveal panel is centered in the section, which —
+          // because the section is pinned — stays put at viewport-center
+          // for the whole sequence, so its opacity keyframes line up with
+          // when it's actually on-screen.
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "+=220%",
+                scrub: 0.4,
+                pin: true,
+                anticipatePin: 1,
+              },
+            })
+            .to(sceneRef.current, { scale: 1.3, y: -16, duration: 1 }, 0)
+            .to(
+              pizzaOuterRef.current,
+              { x: -80, y: -18, rotate: -5, duration: 1 },
+              0,
+            )
+            .to(
+              curryOuterRef.current,
+              { x: 20, y: -14, rotate: 5, duration: 1 },
+              0,
+            )
+            .to(naanOuterRef.current, { y: -30, scale: 1.06, duration: 1 }, 0)
+            .to(textColumnRef.current, { opacity: 0, y: -40, duration: 0.4 }, 0)
+            .to(
+              revealTextRef.current,
+              { opacity: 1, y: 0, duration: 0.3 },
+              0.32,
+            )
+            .to(tableRef.current, { opacity: 0, duration: 0.35 }, 0.4)
+            .to(
+              [
+                pizzaOuterRef.current,
+                curryOuterRef.current,
+                naanOuterRef.current,
+                pizzaSteamRef.current,
+                steamRef.current,
+                naanSteamRef.current,
+                glowRef.current,
+                revealTextRef.current,
+              ],
+              { opacity: 0, duration: 0.35 },
+              0.72,
+            );
+        }
 
         return () => {
           tl.kill();
@@ -355,13 +408,23 @@ export function Hero() {
       </div>
 
       {/* stands in for the intro copy once it scrolls away, during the
-          desktop pin sequence — bridges into the menu-focused section that
-          follows, and repeats the primary CTAs so they're still reachable
-          without scrolling back up. Centered in the viewport rather than
-          pinned near the top, so there's no dead space above it. */}
+          scroll-cinematic sequence (pinned on desktop, scrubbed-in-place on
+          mobile) — bridges into the menu-focused section that follows, and
+          repeats the primary CTAs so they're still reachable without
+          scrolling back up. Centered in the viewport rather than pinned
+          near the top, so there's no dead space above it. Rendered on all
+          viewports since the scroll sequence now runs on mobile too;
+          opacity starts at 0 via the gsap.set above and is driven by the
+          scroll timeline. */}
+      {/* Positioned lower on mobile than on desktop: since mobile has no
+          pin, this panel only stays on-screen for as long as the (moving)
+          section's own scroll-through keeps its position within the
+          viewport — placing it further down the section buys more scroll
+          distance before it's carried off, without overlapping the table
+          scene below it. */}
       <div
         ref={revealTextRef}
-        className="pointer-events-none absolute inset-x-0 top-1/2 z-10 hidden -translate-y-1/2 flex-col items-center gap-6 px-6 text-center sm:flex"
+        className="pointer-events-none absolute inset-x-0 top-[62%] z-10 flex -translate-y-1/2 flex-col items-center gap-6 px-6 text-center sm:top-1/2"
       >
         <div>
           <p className="font-display text-3xl font-light leading-tight text-ivory-100 lg:text-5xl">
@@ -389,10 +452,12 @@ export function Hero() {
       </div>
 
       {/* the table scene — a small, grounded accent at the very bottom of
-          the hero, not a dominant element. */}
+          the hero, not a dominant element. Lifted clear of the fixed
+          WhatsApp button on small screens, where its full pill (icon +
+          label) is wide enough to sit right under the curry/naan dishes. */}
       <div
         ref={sceneRef}
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[170px] sm:h-[220px] md:h-[250px] lg:h-[300px]"
+        className="pointer-events-none absolute inset-x-0 -bottom-4 md:bottom-0 h-[170px] sm:bottom-0 sm:h-[220px] md:h-[250px] lg:h-[300px]"
         aria-hidden="true"
       >
         {/* wide table backdrop, spanning the full hero width */}
@@ -409,13 +474,18 @@ export function Hero() {
 
         {/* the scene stage — each dish already carries its own board/bowl/
             plate in its source image, so they sit straight on the table,
-            spread out, rather than sharing one plate underneath them. */}
-        <div className="absolute bottom-0 left-1/2 aspect-[1408/768] w-[92%] max-w-[820px] -translate-x-1/2 translate-y-6">
+            spread out, rather than sharing one plate underneath them.
+            Height is locked to the same breakpoint values as the table
+            image below (rather than derived from an aspect-ratio), so the
+            dishes' percentage positions always land against the same
+            visible slice of the table — otherwise the two drift apart at
+            viewport widths the composition wasn't hand-tuned for. */}
+        <div className="absolute bottom-0 left-1/2 h-[170px] w-[92%] max-w-[820px] -translate-x-1/2 translate-y-6 sm:h-[220px] md:h-[250px] lg:h-[300px]">
           {/* naan — its own plate, clear of the pizza and curry footprints,
               with a light wisp of oven-fresh steam sized to its own box */}
           <div
             ref={naanOuterRef}
-            className="absolute left-[82%] top-[62%] w-[19%] -translate-x-1/2"
+            className="absolute left-[75%] md:left-[82%] top-[32%] md:top-[52%] w-[19%] -translate-x-1/2"
           >
             <div ref={naanInnerRef} className="relative aspect-[1408/768]">
               <Image
@@ -454,7 +524,7 @@ export function Hero() {
               rising steam scaled to its larger size */}
           <div
             ref={pizzaOuterRef}
-            className="absolute left-[28%] top-[55%] w-[38%] -translate-x-1/2"
+            className="absolute left-[30%] md:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
           >
             <div ref={pizzaInnerRef} className="relative aspect-[1408/768]">
               <Image
@@ -492,7 +562,7 @@ export function Hero() {
               smaller bowl */}
           <div
             ref={curryOuterRef}
-            className="absolute left-[60%] top-[54%] w-[20%] -translate-x-1/2"
+            className="absolute left-[55%] md:left-[60%] top-[30%] md:top-[54%] w-[20%] -translate-x-1/2"
           >
             <div ref={curryInnerRef} className="relative aspect-[1408/768]">
               <Image

@@ -24,7 +24,7 @@ export function FloatingOrderButton() {
         ariaLabel="Chat with us on WhatsApp"
       >
         <MessageCircle className="h-4 w-4" aria-hidden="true" />
-        <span>Chat on WhatsApp</span>
+        <span className="hidden lg:block">Chat on WhatsApp</span>
       </MagneticButton>
     </div>
   );

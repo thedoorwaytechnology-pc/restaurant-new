@@ -8,11 +8,19 @@ export function MenuSection({ category, tone }: { category: MenuCategory; tone: 
   return (
     <section
       id={category.id}
-      className={`scroll-mt-36 py-20 lg:py-24 ${
+      className={`relative overflow-hidden scroll-mt-36 py-20 lg:py-24 ${
         tone === "charcoal-950" ? "bg-charcoal-950" : "bg-charcoal-900"
       }`}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-repeat opacity-[0.12]"
+        style={{
+          backgroundImage: "url('/menu-pattern-tiger.png')",
+          backgroundSize: "480px 320px",
+        }}
+      />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <GoldDivider ornate className="mb-12" />
         <RevealOnScroll className="relative mb-12 aspect-[21/9] w-full overflow-hidden rounded-2xl sm:aspect-[3/1]">
           <Image
