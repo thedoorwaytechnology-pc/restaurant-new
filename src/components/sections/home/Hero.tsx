@@ -2,7 +2,7 @@
 
 import { useRef, type MouseEvent } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+// import { ChevronDown } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/gsap-config";
 import {
   NO_PREFERENCE_QUERY,
@@ -41,10 +41,12 @@ export function Hero() {
 
   const pizzaOuterRef = useRef<HTMLDivElement>(null);
   const pizzaInnerRef = useRef<HTMLDivElement>(null);
+  const pizzaSteamRef = useRef<HTMLDivElement>(null);
   const curryOuterRef = useRef<HTMLDivElement>(null);
   const curryInnerRef = useRef<HTMLDivElement>(null);
   const naanOuterRef = useRef<HTMLDivElement>(null);
   const naanInnerRef = useRef<HTMLDivElement>(null);
+  const naanSteamRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -56,9 +58,16 @@ export function Hero() {
         // would render at its natural (visible) opacity until the playhead
         // reaches them, and would be stuck visible if the timeline is ever
         // interrupted before that point.
-        gsap.set([glowRef.current, tableRef.current, steamRef.current], {
-          opacity: 0,
-        });
+        gsap.set(
+          [
+            glowRef.current,
+            tableRef.current,
+            pizzaSteamRef.current,
+            steamRef.current,
+            naanSteamRef.current,
+          ],
+          { opacity: 0 },
+        );
         gsap.set(revealTextRef.current, { opacity: 0, y: 16 });
 
         // ---- Entrance: plate is set, dishes are placed one by one (~2.5s) ----
@@ -102,10 +111,22 @@ export function Hero() {
             1,
           )
           .fromTo(
+            pizzaSteamRef.current,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.8 },
+            1.3,
+          )
+          .fromTo(
             steamRef.current,
             { opacity: 0 },
             { opacity: 1, duration: 0.8 },
             1.4,
+          )
+          .fromTo(
+            naanSteamRef.current,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.8 },
+            1.5,
           )
           // .fromTo(
           //   eyebrowRef.current,
@@ -146,15 +167,20 @@ export function Hero() {
           },
         );
 
-        // Continuous rising steam
-        gsap.to(steamRef.current, {
-          y: -18,
-          opacity: 0.6,
-          duration: 3.2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
+        // Continuous rising steam — staggered so the three don't pulse in
+        // lockstep
+        gsap.to(
+          [pizzaSteamRef.current, steamRef.current, naanSteamRef.current],
+          {
+            y: -10,
+            opacity: 0.6,
+            duration: 3.2,
+            repeat: -1,
+            yoyo: true,
+            stagger: 0.4,
+            ease: "sine.inOut",
+          },
+        );
 
         // ---- Scroll-driven cinematic sequence (desktop/tablet only) ----
         // The table stays put, the camera moves toward the plate, then the
@@ -180,12 +206,12 @@ export function Hero() {
           .to(sceneRef.current, { scale: 1.3, y: -16, duration: 1 }, 0)
           .to(
             pizzaOuterRef.current,
-            { x: -130, y: -18, rotate: -5, duration: 1 },
+            { x: -80, y: -18, rotate: -5, duration: 1 },
             0,
           )
           .to(
             curryOuterRef.current,
-            { x: 130, y: -14, rotate: 5, duration: 1 },
+            { x: 20, y: -14, rotate: 5, duration: 1 },
             0,
           )
           .to(naanOuterRef.current, { y: -30, scale: 1.06, duration: 1 }, 0)
@@ -197,7 +223,9 @@ export function Hero() {
               pizzaOuterRef.current,
               curryOuterRef.current,
               naanOuterRef.current,
+              pizzaSteamRef.current,
               steamRef.current,
+              naanSteamRef.current,
               glowRef.current,
               revealTextRef.current,
             ],
@@ -383,7 +411,8 @@ export function Hero() {
             plate in its source image, so they sit straight on the table,
             spread out, rather than sharing one plate underneath them. */}
         <div className="absolute bottom-0 left-1/2 aspect-[1408/768] w-[92%] max-w-[820px] -translate-x-1/2 translate-y-6">
-          {/* naan — its own plate, clear of the pizza and curry footprints */}
+          {/* naan — its own plate, clear of the pizza and curry footprints,
+              with a light wisp of oven-fresh steam sized to its own box */}
           <div
             ref={naanOuterRef}
             className="absolute left-[82%] top-[62%] w-[19%] -translate-x-1/2"
@@ -396,9 +425,33 @@ export function Hero() {
                 className="object-cover"
               />
             </div>
+            <div
+              ref={naanSteamRef}
+              className="pointer-events-none absolute -top-[45%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center opacity-80 mix-blend-screen"
+            >
+              <div className="relative -mr-4 aspect-[1408/768] w-[55%] -rotate-6">
+                <Image
+                  src={`${HERO}/hero-steam.png`}
+                  alt=""
+                  fill
+                  sizes="90px"
+                  className="object-contain"
+                />
+              </div>
+              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
+                <Image
+                  src={`${HERO}/hero-steam.png`}
+                  alt=""
+                  fill
+                  sizes="90px"
+                  className="object-contain"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* pizza — its own board, hero of the composition */}
+          {/* pizza — its own board, hero of the composition, with its own
+              rising steam scaled to its larger size */}
           <div
             ref={pizzaOuterRef}
             className="absolute left-[28%] top-[55%] w-[38%] -translate-x-1/2"
@@ -410,9 +463,33 @@ export function Hero() {
                 fill
               />
             </div>
+            <div
+              ref={pizzaSteamRef}
+              className="pointer-events-none absolute -top-[30%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
+            >
+              <div className="relative -mr-2 aspect-[1408/768] w-[55%] -rotate-6">
+                <Image
+                  src={`${HERO}/hero-steam.png`}
+                  alt=""
+                  fill
+                  sizes="140px"
+                  className="object-contain"
+                />
+              </div>
+              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
+                <Image
+                  src={`${HERO}/hero-steam.png`}
+                  alt=""
+                  fill
+                  sizes="140px"
+                  className="object-contain"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* curry — its own copper bowl, with rising steam */}
+          {/* curry — its own copper bowl, with rising steam sized to its
+              smaller bowl */}
           <div
             ref={curryOuterRef}
             className="absolute left-[60%] top-[54%] w-[20%] -translate-x-1/2"
@@ -428,32 +505,23 @@ export function Hero() {
             </div>
             <div
               ref={steamRef}
-              className="pointer-events-none absolute -top-[120%] flex w-[350%] -translate-x-1/2 items-end justify-center mix-blend-screen"
+              className="pointer-events-none absolute -top-[40%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
             >
-              <div className="relative -mr-6 aspect-[1408/768] w-[150%] -rotate-6">
+              <div className="relative -mr-10 aspect-[1408/768] w-[55%] -rotate-6">
                 <Image
                   src={`${HERO}/hero-steam.png`}
                   alt=""
                   fill
-                  sizes="120px"
+                  sizes="90px"
                   className="object-contain"
                 />
               </div>
-              <div className="relative ml-30 aspect-[1408/768] w-[150%] -rotate-6">
+              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
                 <Image
                   src={`${HERO}/hero-steam.png`}
                   alt=""
                   fill
-                  sizes="120px"
-                  className="object-contain"
-                />
-              </div>
-              <div className="relative -mr-6 aspect-[1408/768] w-[150%] -rotate-6">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="120px"
+                  sizes="90px"
                   className="object-contain"
                 />
               </div>

@@ -6,7 +6,7 @@ describe("HomePage", () => {
   it("renders the hero headline", () => {
     render(<HomePage />);
     expect(
-      screen.getByRole("heading", { level: 1, name: /bold flavors/i }),
+      screen.getByRole("heading", { level: 1, name: /timeless hospitality/i }),
     ).toBeInTheDocument();
   });
 
