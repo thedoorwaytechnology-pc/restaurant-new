@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { navLinks } from "@/data/nav-links";
 import { restaurantInfo } from "@/data/restaurant-info";
@@ -6,7 +7,6 @@ import { GoldDivider } from "@/components/ui/GoldDivider";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { AmbientGlow } from "@/components/ui/AmbientGlow";
 import { FlameMotif } from "@/components/ui/motifs";
-import { DarkMap } from "@/components/maps/DarkMap";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -22,6 +22,14 @@ const socialIcons = {
 export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-gold-500/10 bg-charcoal-900">
+      <Image
+        src="/footer-tiger.png"
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
+        className="pointer-events-none object-contain object-[left_bottom] opacity-[0.08] sm:object-bottom"
+      />
       <GrainOverlay />
       <AmbientGlow
         color="copper"
@@ -129,9 +137,7 @@ export function Footer() {
           </div>
         </div>
 
-        <DarkMap className="mt-14 h-64" />
-
-        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-charcoal-700 pt-6 text-xs text-stone-400 sm:flex-row sm:items-center">
+        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-charcoal-700 pt-6 text-xs text-stone-400 sm:flex-row sm:items-center">
           <p>
             &copy; {new Date().getFullYear()} {restaurantInfo.name}. All rights
             reserved.

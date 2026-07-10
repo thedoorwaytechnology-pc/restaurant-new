@@ -19,11 +19,11 @@ export default function HomePage() {
     <>
       <Hero />
       <SignatureDishes />
-      <WhyChooseUs />
       <CateringPromo />
-      <Testimonials />
       <GalleryPreview />
+      <Testimonials />
       <CateringCTA />
+      <WhyChooseUs />
       <VisitUs />
     </>
   );

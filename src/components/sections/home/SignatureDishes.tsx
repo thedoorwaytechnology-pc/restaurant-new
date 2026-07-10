@@ -73,8 +73,16 @@ export function SignatureDishes() {
   );
 
   return (
-    <section className="relative bg-charcoal-900 py-28 lg:py-36">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 lg:grid-cols-12 lg:gap-8 lg:px-10">
+    <section className="relative overflow-hidden bg-charcoal-900 py-28 lg:py-36">
+      <Image
+        src="/background-tiger.png"
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
+        className="pointer-events-none object-cover object-[left_bottom] opacity-[0.08] sm:object-bottom"
+      />
+      <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 lg:grid-cols-12 lg:gap-8 lg:px-10">
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">
             <SectionHeading
