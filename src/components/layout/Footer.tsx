@@ -7,7 +7,11 @@ import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { AmbientGlow } from "@/components/ui/AmbientGlow";
 import { FlameMotif } from "@/components/ui/motifs";
 import { DarkMap } from "@/components/maps/DarkMap";
-import { FacebookIcon, InstagramIcon, TikTokIcon } from "@/components/ui/SocialIcons";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  TikTokIcon,
+} from "@/components/ui/SocialIcons";
 
 const socialIcons = {
   instagram: InstagramIcon,
@@ -19,13 +23,15 @@ export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-gold-500/10 bg-charcoal-900">
       <GrainOverlay />
-      <AmbientGlow color="copper" className="left-1/2 top-0 h-[420px] w-[600px] -translate-x-1/2 -translate-y-1/3" />
+      <AmbientGlow
+        color="copper"
+        className="left-1/2 top-0 h-[420px] w-[600px] -translate-x-1/2 -translate-y-1/3"
+      />
       <FlameMotif className="pointer-events-none absolute -left-16 bottom-0 h-[440px] w-[340px] text-copper-500/[0.05]" />
 
       <div className="relative mx-auto max-w-7xl px-6 pt-24 pb-10 lg:px-10">
         <p className="max-w-3xl font-display text-3xl font-light leading-tight text-ivory-100 sm:text-4xl lg:text-5xl text-balance">
-          Bold flavors, timeless hospitality — pull up a chair and stay a
-          while.
+          Bold flavors, timeless hospitality — pull up a chair and stay a while.
         </p>
 
         <GoldDivider className="mt-14" />
@@ -89,18 +95,33 @@ export function Footer() {
             <span className="eyebrow">Contact</span>
             <ul className="flex flex-col gap-3 text-sm text-stone-300">
               <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                <MapPin
+                  className="mt-0.5 h-4 w-4 shrink-0 text-gold-400"
+                  aria-hidden="true"
+                />
                 <span>{restaurantInfo.address.full}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
-                <a href={restaurantInfo.phoneHref} className="hover:text-gold-300">
+                <Phone
+                  className="h-4 w-4 shrink-0 text-gold-400"
+                  aria-hidden="true"
+                />
+                <a
+                  href={restaurantInfo.phoneHref}
+                  className="hover:text-gold-300"
+                >
                   {restaurantInfo.phone}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
-                <a href={`mailto:${restaurantInfo.email}`} className="hover:text-gold-300">
+                <Mail
+                  className="h-4 w-4 shrink-0 text-gold-400"
+                  aria-hidden="true"
+                />
+                <a
+                  href={`mailto:${restaurantInfo.email}`}
+                  className="hover:text-gold-300"
+                >
                   {restaurantInfo.email}
                 </a>
               </li>
