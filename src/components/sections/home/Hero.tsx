@@ -352,7 +352,13 @@ export function Hero() {
           className="object-cover"
         />
       </div>
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-charcoal-950 via-charcoal-950/85 to-charcoal-950" /> */}
+      {/* Darkens the background photo enough for text/food to read clearly.
+          Stronger on mobile: the same object-cover crop that reads as a
+          lively wide room shot on desktop crops down to a big, blown-out,
+          empty stretch of floor on a narrow viewport, so it needs more
+          help there; eased off at larger breakpoints where the photo
+          already carries its own contrast. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-charcoal-950 via-charcoal-950/70 to-charcoal-950 sm:via-charcoal-950/50 lg:via-charcoal-950/30" />
       <div
         ref={glowRef}
         aria-hidden="true"
@@ -421,12 +427,15 @@ export function Hero() {
       </div>
 
       {/* the table scene — a small, grounded accent at the very bottom of
-          the hero, not a dominant element. Lifted clear of the fixed
-          WhatsApp button on small screens, where its full pill (icon +
-          label) is wide enough to sit right under the dishes. */}
+          the hero, not a dominant element. Given real bottom clearance on
+          mobile (rather than the negative offset that used to push it
+          below the section's own edge) so the dish row isn't cropped
+          against the viewport, and stays clear of the fixed WhatsApp
+          button, whose full pill (icon + label) is wide enough to sit
+          right under the dishes. */}
       <div
         ref={sceneRef}
-        className="pointer-events-none absolute inset-x-0 -bottom-4 h-[170px] sm:bottom-0 sm:h-[220px] md:h-[250px] lg:h-[300px]"
+        className="pointer-events-none absolute inset-x-0 bottom-10 h-[170px] sm:bottom-0 sm:h-[220px] md:h-[250px] lg:h-[300px]"
         aria-hidden="true"
       >
         {/* wide table backdrop, spanning the full hero width */}
