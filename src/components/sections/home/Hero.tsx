@@ -14,60 +14,161 @@ import { heroImage } from "@/data/images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
 
-// Provided asset layers (public/hero/) — all share one 1408x768 stage except
-// hero-table.webp, which is a wider standalone backdrop. Positions below are
-// hand-matched to the hero-scene.webp reference composite.
 const HERO = "/hero";
+const LATEST = "/hero/latest";
 
 // Each dish is two nested elements: the outer wrapper carries the
 // scroll-driven position (the "camera" moving through the scene), the
 // inner wrapper carries the idle breathing motion and mouse parallax —
 // kept on separate elements so the two animations never fight over the
-// same transform properties.
+// same transform properties. Each dish's aspect ratio matches its own
+// cropped source image (these five are individual cutout photos, not
+// slices of one shared composite), so `object-contain` renders them
+// undistorted.
+const DISHES = [
+  {
+    key: "chicken",
+    alt: "Crispy fried chicken wings with fries and dipping sauce",
+    src: `${LATEST}/chicken-cutout.png`,
+    aspect: "889/535",
+    left: "10%",
+    top: "55%",
+    width: "20%",
+    steamSize: "90px",
+  },
+  {
+    key: "biryani",
+    alt: "Biryani rice in a clay bowl",
+    src: `${LATEST}/biryani-cutout.png`,
+    aspect: "941/683",
+    left: "29%",
+    top: "48%",
+    width: "20%",
+    steamSize: "100px",
+  },
+  {
+    key: "pizza",
+    alt: "Wood-fired margherita pizza",
+    src: `${LATEST}/pizza-cutout.png`,
+    aspect: "1251/766",
+    left: "51%",
+    top: "35%",
+    width: "29%",
+    steamSize: "150px",
+  },
+  {
+    key: "naan",
+    alt: "Butter chicken curry with fresh-baked naan",
+    src: `${LATEST}/naan-cutout.png`,
+    aspect: "1218/742",
+    left: "72%",
+    top: "52%",
+    width: "22%",
+    steamSize: "110px",
+  },
+  {
+    key: "momo",
+    alt: "Steamed momo dumplings with dipping sauce",
+    src: `${LATEST}/momo-cutout.png`,
+    aspect: "1118/558",
+    left: "91%",
+    top: "60%",
+    width: "19%",
+    steamSize: "90px",
+  },
+] as const;
+
+// Per-dish entrance motion and idle/parallax/scroll tuning — varied so the
+// five dishes don't all move in lockstep. Roughly: outer items enter from
+// their own side and get more parallax/scroll travel, the centered pizza
+// (hero of the composition) moves the least.
+const DISH_MOTION = {
+  chicken: {
+    entranceFrom: { x: -32, y: 10, rotate: -4 },
+    parallax: { x: -4, y: -2.5 },
+    breatheStagger: 0,
+    scroll: { x: -70, y: -16, rotate: -5 },
+    scrollMobile: { x: -26, y: -9, rotate: -3 },
+  },
+  biryani: {
+    entranceFrom: { y: -20, scale: 0.9 },
+    parallax: { x: -3, y: -2 },
+    breatheStagger: 0.3,
+    scroll: { x: -30, y: -14, rotate: -2 },
+    scrollMobile: { x: -12, y: -7, rotate: -1 },
+  },
+  pizza: {
+    entranceFrom: { y: 14, scale: 0.94 },
+    parallax: { x: -2, y: -1.5 },
+    breatheStagger: 0.6,
+    scroll: { x: 0, y: -20, scale: 1.05 },
+    scrollMobile: { x: 0, y: -10, scale: 1.03 },
+  },
+  naan: {
+    entranceFrom: { y: -18, scale: 0.9 },
+    parallax: { x: -3, y: -2 },
+    breatheStagger: 0.9,
+    scroll: { x: 30, y: -14, rotate: 2 },
+    scrollMobile: { x: 12, y: -7, rotate: 1 },
+  },
+  momo: {
+    entranceFrom: { x: 32, y: 10, rotate: 4 },
+    parallax: { x: -5, y: -3 },
+    breatheStagger: 1.2,
+    scroll: { x: 70, y: -16, rotate: 5 },
+    scrollMobile: { x: 26, y: -9, rotate: 3 },
+  },
+} as const;
+
 export function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  // const eyebrowRef = useRef<HTMLSpanElement>(null);
-  // const line1Ref = useRef<HTMLSpanElement>(null);
   const line2Ref = useRef<HTMLSpanElement>(null);
   const line3Ref = useRef<HTMLSpanElement>(null);
   const copyRef = useRef<HTMLParagraphElement>(null);
-  // const ctaRef = useRef<HTMLDivElement>(null);
   const textColumnRef = useRef<HTMLDivElement>(null);
   const revealTextRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-  const steamRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
 
-  const pizzaOuterRef = useRef<HTMLDivElement>(null);
-  const pizzaInnerRef = useRef<HTMLDivElement>(null);
-  const pizzaSteamRef = useRef<HTMLDivElement>(null);
-  const curryOuterRef = useRef<HTMLDivElement>(null);
-  const curryInnerRef = useRef<HTMLDivElement>(null);
-  const naanOuterRef = useRef<HTMLDivElement>(null);
-  const naanInnerRef = useRef<HTMLDivElement>(null);
-  const naanSteamRef = useRef<HTMLDivElement>(null);
+  const outerRefs = {
+    chicken: useRef<HTMLDivElement>(null),
+    biryani: useRef<HTMLDivElement>(null),
+    pizza: useRef<HTMLDivElement>(null),
+    naan: useRef<HTMLDivElement>(null),
+    momo: useRef<HTMLDivElement>(null),
+  };
+  const innerRefs = {
+    chicken: useRef<HTMLDivElement>(null),
+    biryani: useRef<HTMLDivElement>(null),
+    pizza: useRef<HTMLDivElement>(null),
+    naan: useRef<HTMLDivElement>(null),
+    momo: useRef<HTMLDivElement>(null),
+  };
+  const steamRefs = {
+    chicken: useRef<HTMLDivElement>(null),
+    biryani: useRef<HTMLDivElement>(null),
+    pizza: useRef<HTMLDivElement>(null),
+    naan: useRef<HTMLDivElement>(null),
+    momo: useRef<HTMLDivElement>(null),
+  };
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
 
       mm.add(NO_PREFERENCE_QUERY, () => {
+        const allSteam = DISHES.map((d) => steamRefs[d.key].current);
+        const allOuter = DISHES.map((d) => outerRefs[d.key].current);
+
         // Set hidden synchronously before the timeline plays — these tweens
         // start at a later timeline position, so without this the element
         // would render at its natural (visible) opacity until the playhead
         // reaches them, and would be stuck visible if the timeline is ever
         // interrupted before that point.
-        gsap.set(
-          [
-            glowRef.current,
-            tableRef.current,
-            pizzaSteamRef.current,
-            steamRef.current,
-            naanSteamRef.current,
-          ],
-          { opacity: 0 },
-        );
+        gsap.set([glowRef.current, tableRef.current, ...allSteam], {
+          opacity: 0,
+        });
         gsap.set(revealTextRef.current, { opacity: 0, y: 16 });
 
         // ---- Entrance: plate is set, dishes are placed one by one (~2.5s) ----
@@ -78,183 +179,119 @@ export function Hero() {
           { opacity: 0 },
           { opacity: 1, duration: 1.6 },
           0,
-        )
-          .fromTo(
-            tableRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 1.1 },
-            0.1,
-          )
-          .fromTo(
-            pizzaOuterRef.current,
-            { opacity: 0, x: -36, y: 10, rotate: -4 },
+        ).fromTo(
+          tableRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 1.1 },
+          0.1,
+        );
+
+        DISHES.forEach((dish, i) => {
+          const from = DISH_MOTION[dish.key].entranceFrom;
+          tl.fromTo(
+            outerRefs[dish.key].current,
+            { opacity: 0, ...from },
             {
               opacity: 1,
               x: 0,
               y: 0,
               rotate: 0,
-              duration: 0.9,
+              scale: 1,
+              duration: 0.85,
               ease: ease.expo,
             },
-            0.5,
-          )
-          .fromTo(
-            curryOuterRef.current,
-            { opacity: 0, y: -22, scale: 0.9 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: ease.expo },
-            0.75,
-          )
-          .fromTo(
-            naanOuterRef.current,
-            { opacity: 0, x: 30, y: 8 },
-            { opacity: 1, x: 0, y: 0, duration: 0.8, ease: ease.expo },
-            1,
-          )
-          .fromTo(
-            pizzaSteamRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.8 },
-            1.3,
-          )
-          .fromTo(
-            steamRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.8 },
-            1.4,
-          )
-          .fromTo(
-            naanSteamRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.8 },
-            1.5,
-          )
-          // .fromTo(
-          //   eyebrowRef.current,
-          //   { opacity: 0, y: 16 },
-          //   { opacity: 1, y: 0, duration: 0.7 },
-          //   0.4,
-          // )
-          // .fromTo(
-          //   [line1Ref.current, line2Ref.current, line3Ref.current],
-          //   { opacity: 0, y: 40 },
-          //   { opacity: 1, y: 0, duration: 0.9, stagger: 0.12 },
-          //   0.55,
-          // )
-          .fromTo(
-            copyRef.current,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            1.05,
+            0.5 + i * 0.2,
           );
-        // .fromTo(
-        //   ctaRef.current,
-        //   { opacity: 0, y: 20 },
-        //   { opacity: 1, y: 0, duration: 0.8 },
-        //   1.2,
-        // );
+        });
+
+        DISHES.forEach((dish, i) => {
+          tl.fromTo(
+            steamRefs[dish.key].current,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.8 },
+            1.5 + i * 0.1,
+          );
+        });
+
+        tl.fromTo(
+          copyRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          2.1,
+        );
 
         // Idle "breathing" — a slow, gentle scale pulse, not a float. The
         // food has just been served; nothing should look like it's hovering.
-        gsap.to(
-          [pizzaInnerRef.current, curryInnerRef.current, naanInnerRef.current],
-          {
+        DISHES.forEach((dish) => {
+          gsap.to(innerRefs[dish.key].current, {
             scale: 1.015,
             duration: 4.5,
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut",
-            stagger: 0.6,
-          },
-        );
+            delay: DISH_MOTION[dish.key].breatheStagger,
+          });
+        });
 
-        // Continuous rising steam — staggered so the three don't pulse in
+        // Continuous rising steam — staggered so the five don't pulse in
         // lockstep
-        gsap.to(
-          [pizzaSteamRef.current, steamRef.current, naanSteamRef.current],
-          {
-            y: -10,
-            opacity: 0.6,
-            duration: 3.2,
-            repeat: -1,
-            yoyo: true,
-            stagger: 0.4,
-            ease: "sine.inOut",
-          },
-        );
+        gsap.to(allSteam, {
+          y: -10,
+          opacity: 0.6,
+          duration: 3.2,
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.3,
+          ease: "sine.inOut",
+        });
 
         // ---- Scroll-driven cinematic sequence ----
         // The table stays put, the camera moves toward the plate, then the
-        // dishes separate — pizza left, curry right, naan settles centered
-        // — before the scene hands off into Signature Dishes. Pinned on all
-        // viewports (including mobile): scroll holds the section in place
-        // while the sequence plays, then releases into Signature Dishes
-        // once it's finished — the dish movement is just scaled down a
-        // notch on narrow screens.
+        // dishes separate outward — before the scene hands off into
+        // Signature Dishes. Pinned on all viewports (including mobile):
+        // scroll holds the section in place while the sequence plays, then
+        // releases into Signature Dishes once it's finished — the dish
+        // movement is just scaled down a notch on narrow screens.
         const isMobile = window.innerWidth < 640;
 
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: "+=220%",
-              scrub: 0.4,
-              pin: true,
-              anticipatePin: 1,
-            },
-          })
-          .to(
-            sceneRef.current,
-            {
-              scale: isMobile ? 1.15 : 1.3,
-              y: isMobile ? -10 : -16,
-              duration: 1,
-            },
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "+=220%",
+            scrub: 0.4,
+            pin: true,
+            anticipatePin: 1,
+          },
+        });
+
+        scrollTl.to(
+          sceneRef.current,
+          {
+            scale: isMobile ? 1.15 : 1.3,
+            y: isMobile ? -10 : -16,
+            duration: 1,
+          },
+          0,
+        );
+
+        DISHES.forEach((dish) => {
+          const motion = isMobile
+            ? DISH_MOTION[dish.key].scrollMobile
+            : DISH_MOTION[dish.key].scroll;
+          scrollTl.to(
+            outerRefs[dish.key].current,
+            { ...motion, duration: 1 },
             0,
-          )
-          .to(
-            pizzaOuterRef.current,
-            {
-              x: isMobile ? -10 : -80,
-              y: isMobile ? -10 : -18,
-              rotate: isMobile ? -4 : -5,
-              duration: 1,
-            },
-            0,
-          )
-          .to(
-            curryOuterRef.current,
-            {
-              x: isMobile ? 12 : 20,
-              y: isMobile ? -8 : -14,
-              rotate: isMobile ? 4 : 5,
-              duration: 1,
-            },
-            0,
-          )
-          .to(
-            naanOuterRef.current,
-            {
-              y: isMobile ? -18 : -30,
-              scale: isMobile ? 1.04 : 1.06,
-              duration: 1,
-            },
-            0,
-          )
+          );
+        });
+
+        scrollTl
           .to(textColumnRef.current, { opacity: 0, y: -40, duration: 0.4 }, 0)
           .to(revealTextRef.current, { opacity: 1, y: 0, duration: 0.3 }, 0.32)
           .to(tableRef.current, { opacity: 0, duration: 0.35 }, 0.4)
           .to(
-            [
-              pizzaOuterRef.current,
-              curryOuterRef.current,
-              naanOuterRef.current,
-              pizzaSteamRef.current,
-              steamRef.current,
-              naanSteamRef.current,
-              glowRef.current,
-              revealTextRef.current,
-            ],
+            [...allOuter, ...allSteam, glowRef.current, revealTextRef.current],
             { opacity: 0, duration: 0.35 },
             0.72,
           );
@@ -274,40 +311,28 @@ export function Hero() {
     const rect = sectionRef.current.getBoundingClientRect();
     const nx = (event.clientX - rect.left - rect.width / 2) / (rect.width / 2);
     const ny = (event.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-    gsap.to(pizzaInnerRef.current, {
-      xPercent: nx * -3,
-      yPercent: ny * -2,
-      duration: 0.8,
-      ease: "power3.out",
-      overwrite: "auto",
-    });
-    gsap.to(curryInnerRef.current, {
-      xPercent: nx * -5,
-      yPercent: ny * -3,
-      duration: 0.8,
-      ease: "power3.out",
-      overwrite: "auto",
-    });
-    gsap.to(naanInnerRef.current, {
-      xPercent: nx * -2,
-      yPercent: ny * -1.5,
-      duration: 0.8,
-      ease: "power3.out",
-      overwrite: "auto",
+    DISHES.forEach((dish) => {
+      const { x, y } = DISH_MOTION[dish.key].parallax;
+      gsap.to(innerRefs[dish.key].current, {
+        xPercent: nx * x,
+        yPercent: ny * y,
+        duration: 0.8,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
     });
   }
 
   function resetParallax() {
-    gsap.to(
-      [pizzaInnerRef.current, curryInnerRef.current, naanInnerRef.current],
-      {
+    DISHES.forEach((dish) => {
+      gsap.to(innerRefs[dish.key].current, {
         xPercent: 0,
         yPercent: 0,
         duration: 0.9,
         ease: "power3.out",
         overwrite: "auto",
-      },
-    );
+      });
+    });
   }
 
   return (
@@ -327,7 +352,7 @@ export function Hero() {
           className="object-cover"
         />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-charcoal-950 via-charcoal-950/85 to-charcoal-950" />
+      {/* <div className="absolute inset-0 bg-gradient-to-b from-charcoal-950 via-charcoal-950/85 to-charcoal-950" /> */}
       <div
         ref={glowRef}
         aria-hidden="true"
@@ -340,13 +365,7 @@ export function Hero() {
           ref={textColumnRef}
           className="max-w-2xl text-center sm:mx-auto sm:text-center lg:mx-0 lg:text-left"
         >
-          {/* <span ref={eyebrowRef} className="eyebrow">
-            {restaurantInfo.shortName}
-          </span> */}
           <h1 className="mt-20 font-display text-4xl font-light leading-[1.05] text-ivory-100 sm:text-6xl lg:text-7xl">
-            {/* <span ref={line1Ref} className="block">
-              Bold Flavors.
-            </span> */}
             <span ref={line2Ref} className="block italic text-gold-300">
               Timeless Hospitality.
             </span>
@@ -360,23 +379,6 @@ export function Hero() {
           >
             {restaurantInfo.description}
           </p>
-          {/* <div
-            ref={ctaRef}
-            className="mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
-          >
-            <MagneticButton
-              href={restaurantInfo.orderOnlineHref}
-              className="inline-flex items-center rounded-full bg-gold-500 px-7 py-3.5 text-sm font-semibold tracking-wide text-charcoal-950 transition-colors hover:bg-gold-400"
-            >
-              Order Online
-            </MagneticButton>
-            <MagneticButton
-              href="/catering"
-              className="inline-flex items-center rounded-full border border-ivory-200/30 px-7 py-3.5 text-sm font-medium tracking-wide text-ivory-100 transition-colors hover:border-gold-400 hover:text-gold-300"
-            >
-              Catering
-            </MagneticButton>
-          </div> */}
         </div>
       </div>
 
@@ -421,149 +423,78 @@ export function Hero() {
       {/* the table scene — a small, grounded accent at the very bottom of
           the hero, not a dominant element. Lifted clear of the fixed
           WhatsApp button on small screens, where its full pill (icon +
-          label) is wide enough to sit right under the curry/naan dishes. */}
+          label) is wide enough to sit right under the dishes. */}
       <div
         ref={sceneRef}
-        className="pointer-events-none absolute inset-x-0 -bottom-4 md:bottom-0 h-[170px] sm:bottom-0 sm:h-[220px] md:h-[250px] lg:h-[300px]"
+        className="pointer-events-none absolute inset-x-0 -bottom-4 h-[170px] sm:bottom-0 sm:h-[220px] md:h-[250px] lg:h-[300px]"
         aria-hidden="true"
       >
         {/* wide table backdrop, spanning the full hero width */}
-        <div ref={tableRef} className="absolute inset-x-0 bottom-0 h-full">
+        {/* <div ref={tableRef} className="absolute inset-x-0 bottom-0 h-full">
           <Image
-            src={`${HERO}/hero-table.png`}
+            src={`${HERO}/hero-table4.png`}
             alt=""
             fill
             sizes="100vw"
             className="object-cover object-top"
             priority
           />
-        </div>
+        </div> */}
 
-        {/* the scene stage — each dish already carries its own board/bowl/
-            plate in its source image, so they sit straight on the table,
-            spread out, rather than sharing one plate underneath them.
-            Height is locked to the same breakpoint values as the table
-            image below (rather than derived from an aspect-ratio), so the
-            dishes' percentage positions always land against the same
-            visible slice of the table — otherwise the two drift apart at
-            viewport widths the composition wasn't hand-tuned for. */}
-        <div className="absolute bottom-0 left-1/2 h-[170px] w-[92%] max-w-[820px] -translate-x-1/2 translate-y-6 sm:h-[220px] md:h-[250px] lg:h-[300px]">
-          {/* naan — its own plate, clear of the pizza and curry footprints,
-              with a light wisp of oven-fresh steam sized to its own box */}
-          <div
-            ref={naanOuterRef}
-            className="absolute left-[75%] md:left-[82%] top-[32%] md:top-[52%] w-[19%] -translate-x-1/2"
-          >
-            <div ref={naanInnerRef} className="relative aspect-[1408/768]">
-              <Image
-                src={`${HERO}/hero-naan.png`}
-                alt="Fresh-baked naan on its own plate"
-                fill
-                className="object-cover"
-              />
-            </div>
+        {/* the scene stage — dishes are individually cut-out photos (not
+            slices of one shared composite), spread out across the table,
+            each with its own steam sized to its own box. Height is locked
+            to the same breakpoint values as the table image above (rather
+            than derived from an aspect-ratio), so the dishes' percentage
+            positions always land against the same visible slice of the
+            table — otherwise the two drift apart at viewport widths the
+            composition wasn't hand-tuned for. */}
+        <div className="absolute bottom-0 left-1/2 h-[170px] w-[94%] max-w-[960px] -translate-x-1/2 translate-y-6 sm:h-[220px] md:h-[250px] lg:h-[300px]">
+          {DISHES.map((dish) => (
             <div
-              ref={naanSteamRef}
-              className="pointer-events-none absolute -top-[45%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center opacity-80 mix-blend-screen"
+              key={dish.key}
+              ref={outerRefs[dish.key]}
+              className="absolute -translate-x-1/2"
+              style={{ left: dish.left, top: dish.top, width: dish.width }}
             >
-              <div className="relative -mr-4 aspect-[1408/768] w-[55%] -rotate-6">
+              <div
+                ref={innerRefs[dish.key]}
+                className="relative"
+                style={{ aspectRatio: dish.aspect }}
+              >
                 <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
+                  src={dish.src}
+                  alt={dish.alt}
                   fill
-                  sizes="90px"
+                  sizes="(min-width: 1024px) 400px, 40vw"
                   className="object-contain"
                 />
               </div>
-              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="90px"
-                  className="object-contain"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* pizza — its own board, hero of the composition, with its own
-              rising steam scaled to its larger size */}
-          <div
-            ref={pizzaOuterRef}
-            className="absolute left-[30%] xs:left-[10%] l:left-[28%] top-[25%] md:top-[35%] w-[38%] -translate-x-1/2"
-          >
-            <div ref={pizzaInnerRef} className="relative aspect-[1408/768]">
-              <Image
-                src={`${HERO}/hero-pizza.png`}
-                alt="Wood-fired margherita pizza on a wooden board"
-                fill
-              />
-            </div>
-            <div
-              ref={pizzaSteamRef}
-              className="pointer-events-none absolute -top-[30%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
-            >
-              <div className="relative -mr-2 aspect-[1408/768] w-[55%] -rotate-6">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="140px"
-                  className="object-contain"
-                />
-              </div>
-              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="140px"
-                  className="object-contain"
-                />
+              <div
+                ref={steamRefs[dish.key]}
+                className="pointer-events-none absolute -top-[35%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
+              >
+                <div className="relative -mr-2 aspect-[1408/768] w-[55%] -rotate-6">
+                  <Image
+                    src={`${HERO}/hero-steam.png`}
+                    alt=""
+                    fill
+                    sizes={dish.steamSize}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
+                  <Image
+                    src={`${HERO}/hero-steam.png`}
+                    alt=""
+                    fill
+                    sizes={dish.steamSize}
+                    className="object-contain"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* curry — its own copper bowl, with rising steam sized to its
-              smaller bowl */}
-          <div
-            ref={curryOuterRef}
-            className="absolute left-[55%] md:left-[60%] top-[30%] md:top-[54%] w-[20%] -translate-x-1/2"
-          >
-            <div ref={curryInnerRef} className="relative aspect-[1408/768]">
-              <Image
-                src={`${HERO}/hero-curry-bowl.png`}
-                alt="Butter chicken in a copper bowl"
-                fill
-                sizes="800px"
-                className="object-cover"
-              />
-            </div>
-            <div
-              ref={steamRef}
-              className="pointer-events-none absolute -top-[40%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
-            >
-              <div className="relative -mr-10 aspect-[1408/768] w-[55%] -rotate-6">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="90px"
-                  className="object-contain"
-                />
-              </div>
-              <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
-                <Image
-                  src={`${HERO}/hero-steam.png`}
-                  alt=""
-                  fill
-                  sizes="90px"
-                  className="object-contain"
-                />
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
