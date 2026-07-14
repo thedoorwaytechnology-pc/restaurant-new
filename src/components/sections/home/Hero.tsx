@@ -16,6 +16,21 @@ import { GrainOverlay } from "@/components/ui/GrainOverlay";
 
 const HERO = "/hero";
 const LATEST = "/hero/latest";
+// hero-steam.png (the original stock asset) was a fairly dark, muddy-gray
+// smoke texture, which barely registers under mix-blend-screen (screen
+// blending mostly discards darker pixels) — these six are generated
+// in-house: soft, billowy, translucent plumes with turbulent internal
+// texture (not thin calligraphic ribbons, not flat smooth gradients),
+// each a distinct shape/sway so a row of dishes doesn't read as one wisp
+// copy pasted five times.
+const STEAM_WISPS = [
+  { src: `${HERO}/steam-wisp-0.png`, aspect: "1000/1500" },
+  { src: `${HERO}/steam-wisp-1.png`, aspect: "1000/1500" },
+  { src: `${HERO}/steam-wisp-2.png`, aspect: "1000/1500" },
+  { src: `${HERO}/steam-wisp-3.png`, aspect: "1000/1500" },
+  { src: `${HERO}/steam-wisp-4.png`, aspect: "1000/1500" },
+  { src: `${HERO}/steam-wisp-5.png`, aspect: "1000/1500" },
+] as const;
 
 // Each dish is two nested elements: the outer wrapper carries the
 // scroll-driven position (the "camera" moving through the scene), the
@@ -171,6 +186,18 @@ export function Hero() {
         });
         gsap.set(revealTextRef.current, { opacity: 0, y: 16 });
 
+        // Each dish is centered on its `left` position via the
+        // `-translate-x-1/2` class (a plain CSS % transform, kept as the
+        // static/no-JS fallback). GSAP doesn't reliably rediscover a
+        // percentage-based transform that arrived via a CSS class before
+        // its first tween — it can silently reset it to 0 instead of
+        // preserving it (observed on this exact setup: one dish out of
+        // five lost its centering this way). Setting xPercent explicitly
+        // up front makes GSAP own that -50% as its own tracked value, so
+        // every later x/y (pixel) tween composes on top of it correctly
+        // instead of occasionally clobbering it.
+        gsap.set(allOuter, { xPercent: -50 });
+
         // ---- Entrance: plate is set, dishes are placed one by one (~2.5s) ----
         const tl = gsap.timeline({ defaults: { ease: ease.out } });
 
@@ -233,16 +260,34 @@ export function Hero() {
           });
         });
 
-        // Continuous rising steam — staggered so the five don't pulse in
-        // lockstep
-        gsap.to(allSteam, {
-          y: -10,
-          opacity: 0.6,
-          duration: 3.2,
-          repeat: -1,
-          yoyo: true,
-          stagger: 0.3,
-          ease: "sine.inOut",
+        // Continuous rising steam. Each dish's three wisps (the container's
+        // children) rise and drift independently — different heights,
+        // speeds, and a slow horizontal sway — rather than moving as one
+        // rigid block, which is what actually sells it as loose vapor
+        // instead of a sprite bobbing up and down.
+        DISHES.forEach((dish) => {
+          const wisps = steamRefs[dish.key].current?.children;
+          if (!wisps) return;
+
+          gsap.to(wisps, {
+            y: (i) => -14 - i * 5,
+            scale: (i) => 1.05 + i * 0.05,
+            opacity: (i) => 0.4 + (i % 2) * 0.2,
+            duration: (i) => 3.4 + i * 0.7,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: { each: 0.4, from: "random" },
+          });
+
+          gsap.to(wisps, {
+            xPercent: (i) => (i % 2 === 0 ? 4 : -4),
+            duration: (i) => 4.2 + i * 0.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: 0.5,
+          });
         });
 
         // ---- Scroll-driven cinematic sequence ----
@@ -459,51 +504,87 @@ export function Hero() {
             table — otherwise the two drift apart at viewport widths the
             composition wasn't hand-tuned for. */}
         <div className="absolute bottom-0 left-1/2 h-[170px] w-[94%] max-w-[960px] -translate-x-1/2 translate-y-6 sm:h-[220px] md:h-[250px] lg:h-[300px]">
-          {DISHES.map((dish) => (
-            <div
-              key={dish.key}
-              ref={outerRefs[dish.key]}
-              className="absolute -translate-x-1/2"
-              style={{ left: dish.left, top: dish.top, width: dish.width }}
-            >
+          {DISHES.map((dish, dishIndex) => {
+            // Cycle through the six generated wisps so adjacent dishes
+            // (and the three wisps within one dish) never repeat the same
+            // shape twice in a row.
+            const w1 = STEAM_WISPS[dishIndex % STEAM_WISPS.length];
+            const w2 = STEAM_WISPS[(dishIndex + 2) % STEAM_WISPS.length];
+            const w3 = STEAM_WISPS[(dishIndex + 4) % STEAM_WISPS.length];
+            return (
               <div
-                ref={innerRefs[dish.key]}
-                className="relative"
-                style={{ aspectRatio: dish.aspect }}
+                key={dish.key}
+                ref={outerRefs[dish.key]}
+                className="absolute -translate-x-1/2"
+                style={{ left: dish.left, top: dish.top, width: dish.width }}
               >
-                <Image
-                  src={dish.src}
-                  alt={dish.alt}
-                  fill
-                  sizes="(min-width: 1024px) 400px, 40vw"
-                  className="object-contain"
-                />
-              </div>
-              <div
-                ref={steamRefs[dish.key]}
-                className="pointer-events-none absolute -top-[35%] left-1/2 flex w-[130%] -translate-x-1/2 items-end justify-center mix-blend-screen"
-              >
-                <div className="relative -mr-2 aspect-[1408/768] w-[55%] -rotate-6">
+                <div
+                  ref={innerRefs[dish.key]}
+                  className="relative"
+                  style={{ aspectRatio: dish.aspect }}
+                >
                   <Image
-                    src={`${HERO}/hero-steam.png`}
-                    alt=""
+                    src={dish.src}
+                    alt={dish.alt}
                     fill
-                    sizes={dish.steamSize}
+                    sizes="(min-width: 1024px) 400px, 40vw"
                     className="object-contain"
                   />
                 </div>
-                <div className="relative aspect-[1408/768] w-[55%] translate-y-1 rotate-6 opacity-70">
-                  <Image
-                    src={`${HERO}/hero-steam.png`}
-                    alt=""
-                    fill
-                    sizes={dish.steamSize}
-                    className="object-contain"
-                  />
+                {/* Three wisps instead of one rigid pair, each a different
+                    generated shape/size/rotation/opacity so the cluster
+                    reads as a loose curl of rising steam rather than one
+                    shape duplicated. Each wisp is animated independently
+                    (see useGSAP below) for the same reason. */}
+                <div
+                  ref={steamRefs[dish.key]}
+                  className="pointer-events-none absolute -top-[42%] left-1/2 flex w-[95%] -translate-x-1/2 items-end justify-center mix-blend-screen"
+                >
+                  {/* Width-only + aspectRatio (auto height) — setting an
+                      explicit height here too would make aspectRatio a
+                      no-op, so the box no longer matches each wisp's own
+                      proportions and Next/Image's object-contain shrinks
+                      it down to fit, letterboxed. */}
+                  <div
+                    className="relative -mr-2 w-[19%] -rotate-[8deg] opacity-70"
+                    style={{ aspectRatio: w1.aspect }}
+                  >
+                    <Image
+                      src={w1.src}
+                      alt=""
+                      fill
+                      sizes={dish.steamSize}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div
+                    className="relative w-[22%] translate-y-2 opacity-90"
+                    style={{ aspectRatio: w2.aspect }}
+                  >
+                    <Image
+                      src={w2.src}
+                      alt=""
+                      fill
+                      sizes={dish.steamSize}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div
+                    className="relative -ml-2 w-[17%] rotate-[7deg] opacity-60"
+                    style={{ aspectRatio: w3.aspect }}
+                  >
+                    <Image
+                      src={w3.src}
+                      alt=""
+                      fill
+                      sizes={dish.steamSize}
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
